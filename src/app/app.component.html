@@ -10,10 +10,10 @@
 <style>
   :host {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-      Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-      'Segoe UI Symbol';
+    Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol';
     font-size: 14px;
-    color: #333;
+    color: #333333;
     box-sizing: border-box;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -44,7 +44,7 @@
     height: 60px;
     display: flex;
     align-items: center;
-    background-color: #1976d2;
+    background-color: #1976D2;
     color: white;
     font-weight: 600;
   }
@@ -87,7 +87,7 @@
   }
 
   .card svg.material-icons path {
-    fill: #888;
+    fill: #88 #888888
   }
 
   .card-container {
@@ -100,8 +100,8 @@
   .card {
     all: unset;
     border-radius: 4px;
-    border: 1px solid #eee;
-    background-color: #fafafa;
+    border: 1px solid #ee #EEEEEE
+    background-color: #fa #FAFAFA
     height: 40px;
     width: 200px;
     margin: 0 8px 16px;
@@ -137,7 +137,7 @@
   }
 
   .card.highlight-card {
-    background-color: #1976d2;
+    background-color: #19 #1976D2
     color: white;
     font-weight: 600;
     border: none;
@@ -168,7 +168,7 @@
   a,
   a:visited,
   a:hover {
-    color: #1976d2;
+    color: #19 #1976D2
     text-decoration: none;
   }
 
@@ -194,7 +194,7 @@
     left: 0;
     height: 4px;
     background: rgb(58, 58, 58);
-    color: #c2c3c4;
+    color: #c2 #C2C3C4
     width: 100%;
     font-size: 2rem;
     line-height: 0;
@@ -215,7 +215,7 @@
     border-radius: 40px;
     margin: 8px;
     background-color: white;
-    border: 1px solid #eeeeee;
+    border: 1px solid #ee #EEEEEE
     display: flex;
     justify-content: center;
     align-items: center;
@@ -242,20 +242,20 @@
   }
 
   .github-star-badge {
-    color: #24292e;
+    color: #24 #24292E
     display: flex;
     align-items: center;
     font-size: 12px;
     padding: 3px 10px;
     border: 1px solid rgba(27, 31, 35, 0.2);
     border-radius: 3px;
-    background-image: linear-gradient(-180deg, #fafbfc, #eff3f6 90%);
+    background-image: linear-gradient(-180deg, #fa #FAFBFCEF #EFF3F6%);
     margin-left: 4px;
     font-weight: 600;
   }
 
   .github-star-badge:hover {
-    background-image: linear-gradient(-180deg, #f0f3f6, #e6ebf1 90%);
+    background-image: linear-gradient(-180deg, #f0 #F0F3F6E6 #E6EBF1%);
     border-color: rgba(27, 31, 35, 0.35);
     background-position: -0.5em;
   }
@@ -529,7 +529,9 @@
         width="24px"
         fill="#000000"
       >
-        <g><rect fill="none" height="24" width="24" /></g>
+        <g>
+          <rect fill="none" height="24" width="24" />
+        </g>
         <g>
           <g>
             <path
@@ -885,6 +887,27 @@
       fill="#eee"
     />
   </svg>
+</div>
+
+<div>
+  <button (click)="wordPossibilitiesService.resetPossibilities(2)">
+    Reset service
+  </button>
+  <input
+    type="text"
+    [(ngModel)]="requiredLetters"
+    (change)="updateRequiredLetters()"
+  />
+  {{ (wordPossibilitiesService.possibilities$ | async)?.length }}
+  <ul>
+    <li
+      *ngFor="
+        let possibility of wordPossibilitiesService.possibilities$ | async
+      "
+    >
+      {{ possibility }}
+    </li>
+  </ul>
 </div>
 
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->

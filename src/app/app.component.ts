@@ -1,8 +1,19 @@
-import { Component, OnInit } from '@angular/core'
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core'
 import {
   Requirement,
   WordPossibilitiesService,
 } from './word-possibilities.service'
+
+export type GuessedLetter = {
+  letter?: string
+  result: 'unknown' | 'wrong' | 'exists' | 'exact'
+}
 
 @Component({
   selector: 'app-root',
@@ -10,9 +21,25 @@ import {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
+  private static readonly numberOfGuesses = 6
+  private static readonly wordLength = 5
+
+  @ViewChild('wordsContainer')
+  wordsContainer?: ElementRef<HTMLDivElement>
+
   title = 'wordle-helper'
   requiredLetters = ''
   requiredLettersRules: Requirement[] = []
+  guesses: GuessedLetter[][] = Array(AppComponent.numberOfGuesses)
+    .fill(1)
+    .map(() =>
+      Array(AppComponent.wordLength)
+        .fill(1)
+        .map(() => ({
+          result: 'unknown',
+          letter: '',
+        })),
+    )
 
   constructor(public wordPossibilitiesService: WordPossibilitiesService) {}
 
@@ -27,5 +54,45 @@ export class AppComponent implements OnInit {
         letter,
       })),
     )
+  }
+
+  private static rowAndColToIndex(row: number, col: number) {
+    return row * AppComponent.wordLength + col
+  }
+
+  private static indexToRowAndCol(index: number) {
+    return {
+      row: Math.floor(index / this.wordLength),
+      col: index % this.wordLength,
+    }
+  }
+
+  backspace(row: number, col: number) {
+    const { row: prevRow, col: prevCol } = AppComponent.indexToRowAndCol(
+      AppComponent.rowAndColToIndex(row, col) - 1,
+    )
+
+    const prevItem = this.guesses[prevRow][prevCol]
+    if (prevItem) {
+      prevItem.letter = ''
+    }
+
+    this.focusRelative(row, col, -1)
+  }
+
+  focusRelative(currRow: number, currCol: number, delta: number) {
+    const letters: NodeListOf<HTMLElement> | undefined =
+      this.wordsContainer?.nativeElement.querySelectorAll('app-letter')
+    letters?.[AppComponent.rowAndColToIndex(currRow, currCol) + delta]?.focus()
+  }
+
+  checkLetter(row: number, col: number) {
+    const letter = this.guesses[row][col]
+    if ((letter.letter?.length ?? 0) > 1) {
+      const newLetter = letter.letter?.slice(0, 1) ?? ''
+      this.guesses[row][col] = { letter: newLetter, result: letter.result }
+    }
+
+    this.focusRelative(row, col, 1)
   }
 }

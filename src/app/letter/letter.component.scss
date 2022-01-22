@@ -1,0 +1,24 @@
+:host {
+  aspect-ratio: 1/1;
+  width: 1em;
+  display: inline-block;
+  background-color: var(--light-grey);
+  text-transform: uppercase;
+  color: white;
+  text-align: center;
+  padding-bottom: 0.2em;
+  overflow: hidden;
+  caret-color: transparent;
+
+  &.exact {
+    background-color: var(--green);
+  }
+
+  &.wrong {
+    background-color: var(--dark-grey);
+  }
+
+  &.exists {
+    background-color: var(--yellow);
+  }
+}

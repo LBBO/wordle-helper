@@ -19,3 +19,32 @@ main {
   gap: var(--gap);
   width: fit-content;
 }
+
+.letter {
+  display: flex;
+  flex-direction: column;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  aspect-ratio: 3/1;
+
+  div {
+    flex-grow: 1;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .exact {
+    background-color: var(--green);
+  }
+
+  .exists {
+    background-color: var(--yellow);
+  }
+
+  .wrong {
+    background-color: var(--red);
+  }
+}

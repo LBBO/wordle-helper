@@ -1,15 +1,21 @@
 <main>
   <div class="words" #wordsContainer>
     <div class="word" *ngFor="let word of guesses; let row = index">
-      <app-letter
-        *ngFor="let letter of word; let col = index"
-        [letter]="letter"
-        contenteditable
-        [(ngModel)]="guesses[row][col].letter"
-        (ngModelChange)="checkLetter(row, col)"
-        (keyup.backspace)="backspace(row, col)"
-      >
-      </app-letter>
+      <div class="letter" *ngFor="let letter of word; let col = index">
+        <app-letter
+          [letter]="letter"
+          contenteditable
+          [(ngModel)]="guesses[row][col].letter"
+          (ngModelChange)="checkLetter(row, col)"
+          (keyup.backspace)="backspace(row, col)"
+        >
+        </app-letter>
+        <div class="buttons">
+          <div class="exact" (click)="toggle(row, col, 'exact')"></div>
+          <div class="exists" (click)="toggle(row, col, 'exists')"></div>
+          <div class="wrong" (click)="toggle(row, col, 'wrong')"></div>
+        </div>
+      </div>
     </div>
   </div>
 </main>

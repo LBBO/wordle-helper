@@ -88,9 +88,13 @@ export class AppComponent implements OnInit {
 
   checkLetter(row: number, col: number) {
     const letter = this.guesses[row][col]
+    let newLetter = letter.letter ?? ''
     if ((letter.letter?.length ?? 0) > 1) {
-      const newLetter = letter.letter?.slice(0, 1) ?? ''
-      this.guesses[row][col] = { letter: newLetter, result: letter.result }
+      newLetter = letter.letter?.slice(0, 1) ?? ''
+    }
+    this.guesses[row][col] = {
+      ...letter,
+      letter: newLetter,
     }
 
     this.focusRelative(row, col, 1)

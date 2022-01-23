@@ -1,19 +1,29 @@
 :host {
   display: flex;
   flex-direction: column;
+  gap: 0.1em;
+  user-select: none;
+
+  &.unknown {
+    input {
+      border: 2px solid var(--grey);
+    }
+  }
 }
 
 input {
   aspect-ratio: 1/1;
   width: 1.2em;
-  background-color: var(--light-grey);
+  background-color: var(--result-color);
   font-size: inherit;
-  color: white;
+  color: inherit;
   line-height: 100%;
   text-align: center;
   text-transform: uppercase;
   overflow: hidden;
   border: none;
+  box-sizing: border-box;
+  user-select: none;
 }
 
 .buttons {
@@ -24,20 +34,25 @@ input {
   div {
     flex-grow: 1;
     cursor: pointer;
+
+    &.exact {
+      background-color: var(--darkend-green);
+    }
+
+    &.exists {
+      background-color: var(--darkend-yellow);
+    }
   }
 }
 
-:host.exact input,
-.exact {
-  background-color: var(--green);
+:host.exact {
+  --result-color: var(--darkend-green);
 }
 
-:host.wrong input,
-.wrong {
-  background-color: var(--dark-grey);
+:host.wrong {
+  --result-color: var(--dark-grey);
 }
 
-:host.exists input,
-.exists {
-  background-color: var(--yellow);
+:host.exists {
+  --result-color: var(--darkend-yellow);
 }

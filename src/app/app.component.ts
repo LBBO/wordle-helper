@@ -1,18 +1,14 @@
-import {
-  Component,
-  ElementRef,
-  OnInit,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core'
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
 import {
   Requirement,
   WordPossibilitiesService,
 } from './word-possibilities.service'
 
+export type GuessingResult = 'unknown' | 'exists' | 'exact'
+
 export type GuessedLetter = {
-  letter?: string
-  result: 'unknown' | 'wrong' | 'exists' | 'exact'
+  letter: string
+  result: GuessingResult
 }
 
 @Component({
@@ -82,7 +78,7 @@ export class AppComponent implements OnInit {
 
   focusRelative(currRow: number, currCol: number, delta: number) {
     const letters: NodeListOf<HTMLElement> | undefined =
-      this.wordsContainer?.nativeElement.querySelectorAll('app-letter')
+      this.wordsContainer?.nativeElement.querySelectorAll('app-letter input')
     letters?.[AppComponent.rowAndColToIndex(currRow, currCol) + delta]?.focus()
   }
 

@@ -1,24 +1,43 @@
 :host {
+  display: flex;
+  flex-direction: column;
+}
+
+input {
   aspect-ratio: 1/1;
-  width: 1em;
-  display: inline-block;
+  width: 1.2em;
   background-color: var(--light-grey);
-  text-transform: uppercase;
+  font-size: inherit;
   color: white;
+  line-height: 100%;
   text-align: center;
-  padding-bottom: 0.2em;
+  text-transform: uppercase;
   overflow: hidden;
-  caret-color: transparent;
+  border: none;
+}
 
-  &.exact {
-    background-color: var(--green);
-  }
+.buttons {
+  aspect-ratio: 2/1;
+  display: flex;
+  flex-direction: row;
 
-  &.wrong {
-    background-color: var(--dark-grey);
+  div {
+    flex-grow: 1;
+    cursor: pointer;
   }
+}
 
-  &.exists {
-    background-color: var(--yellow);
-  }
+:host.exact input,
+.exact {
+  background-color: var(--green);
+}
+
+:host.wrong input,
+.wrong {
+  background-color: var(--dark-grey);
+}
+
+:host.exists input,
+.exists {
+  background-color: var(--yellow);
 }

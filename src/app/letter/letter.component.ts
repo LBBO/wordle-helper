@@ -1,5 +1,11 @@
-import { Component, Host, HostBinding, Input } from '@angular/core'
-import { GuessedLetter } from '../app.component'
+import {
+  Component,
+  EventEmitter,
+  HostBinding,
+  Input,
+  Output,
+} from '@angular/core'
+import { GuessedLetter, GuessingResult } from '../app.component'
 
 @Component({
   selector: 'app-letter',
@@ -7,23 +13,45 @@ import { GuessedLetter } from '../app.component'
   styleUrls: ['./letter.component.scss'],
 })
 export class LetterComponent {
-  private _letter?: GuessedLetter
-
-  @HostBinding('contenteditable')
-  contentEditable = true
-
-  @HostBinding('class')
-  result: GuessedLetter['result'] = 'unknown'
-
   @Input()
-  set letter(value: GuessedLetter | undefined) {
-    this._letter = value
-    this.result = value?.result ?? 'unknown'
+  letter: GuessedLetter = {
+    letter: '',
+    result: 'unknown',
   }
 
-  constructor() {}
+  @Output()
+  letterChange = new EventEmitter<GuessedLetter>()
 
-  get letter(): GuessedLetter | undefined {
-    return this._letter
+  @Output()
+  letterTyped = new EventEmitter()
+
+  @Output()
+  backspace = new EventEmitter()
+
+  get char() {
+    return this.letter?.letter ?? ''
+  }
+
+  set char(value: string) {
+    this.letterChange.emit({
+      ...this.letter,
+      letter: value.slice(0, 1),
+    })
+
+    this.letterTyped.emit()
+  }
+
+  toggle(result: GuessingResult) {
+    this.letterChange.emit({
+      ...this.letter,
+      result: this.letter.result === result ? 'unknown' : result,
+    })
+  }
+
+  @HostBinding('class')
+  get result(): GuessingResult | 'wrong' {
+    return this.letter.letter.length > 0 && this.letter.result === 'unknown'
+      ? 'wrong'
+      : this.letter.result
   }
 }

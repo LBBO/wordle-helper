@@ -1,5 +1,8 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
 import {
+  ExactRequirement,
+  ExistsRequirement,
+  InexistentRequirement,
   Requirement,
   WordPossibilitiesService,
 } from './word-possibilities.service'
@@ -82,17 +85,33 @@ export class AppComponent implements OnInit {
     letters?.[AppComponent.rowAndColToIndex(currRow, currCol) + delta]?.focus()
   }
 
-  checkLetter(row: number, col: number) {
-    const letter = this.guesses[row][col]
-    let newLetter = letter.letter ?? ''
-    if ((letter.letter?.length ?? 0) > 1) {
-      newLetter = letter.letter?.slice(0, 1) ?? ''
-    }
-    this.guesses[row][col] = {
-      ...letter,
-      letter: newLetter,
-    }
+  updateRules() {
+    const newRequirements = this.guesses
+      .map((row) => row.map((letter, index) => ({ ...letter, index })))
+      .flat()
+      .map(({ result, letter, index }): Requirement | undefined => {
+        if (result === 'exact') {
+          return {
+            type: 'exact',
+            letter,
+            index,
+          } as ExactRequirement
+        } else if (result === 'exists') {
+          return {
+            type: 'exists',
+            letter,
+          } as ExistsRequirement
+        } else if (letter.length) {
+          return {
+            type: 'inexistent',
+            letter,
+          } as InexistentRequirement
+        } else {
+          return undefined
+        }
+      })
+      .filter((v): v is Requirement => v !== undefined)
 
-    this.focusRelative(row, col, 1)
+    this.wordPossibilitiesService.setRequirements(newRequirements)
   }
 }

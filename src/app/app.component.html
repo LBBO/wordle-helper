@@ -6,6 +6,7 @@
         [(letter)]="guesses[row][col]"
         (letterTyped)="focusRelative(row, col, 1)"
         (backspace)="backspace(row, col)"
+        (letterChange)="updateRules()"
       ></app-letter>
     </div>
   </div>

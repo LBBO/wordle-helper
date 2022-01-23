@@ -13,16 +13,16 @@
 </main>
 
 <div>
-  <button (click)="wordPossibilitiesService.resetPossibilities(2)">
-    Reset service
+  <button (click)="wordPossibilitiesService.resetPossibilities(5)">
+    Generate word list
   </button>
-  <input
-    type="text"
-    [(ngModel)]="requiredLetters"
-    (change)="updateRequiredLetters()"
-  />
   {{ (wordPossibilitiesService.possibilities$ | async)?.length }}
-  <ul>
+  <ul
+    *ngIf="
+      ((wordPossibilitiesService.possibilities$ | async)?.length ?? 0) < 1000;
+      else tooManyNotice
+    "
+  >
     <li
       *ngFor="
         let possibility of wordPossibilitiesService.possibilities$ | async
@@ -31,4 +31,7 @@
       {{ possibility }}
     </li>
   </ul>
+  <ng-template #tooManyNotice>
+    <div class="too-many-notice">too many items</div>
+  </ng-template>
 </div>

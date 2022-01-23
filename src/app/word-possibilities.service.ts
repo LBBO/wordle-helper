@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable } from 'rxjs'
-import { map, withLatestFrom } from 'rxjs/operators'
+import { Injectable, OnDestroy } from '@angular/core'
+import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs'
+import { distinctUntilChanged, map } from 'rxjs/operators'
 
 export type InexistentRequirement = {
   type: 'inexistent'
@@ -9,6 +9,7 @@ export type InexistentRequirement = {
 export type ExistsRequirement = {
   type: 'exists'
   letter: string
+  incorrectIndex: number
 }
 export type ExactRequirement = {
   type: 'exact'
@@ -24,31 +25,64 @@ export type Requirement =
 @Injectable({
   providedIn: 'root',
 })
-export class WordPossibilitiesService {
+export class WordPossibilitiesService implements OnDestroy {
   private static alphabet = Array(26)
     .fill(1)
     .map((_, i) => String.fromCharCode(0x61 + i))
   private _possibilities$ = new BehaviorSubject<string[]>([])
   private _requirements$ = new BehaviorSubject<Requirement[]>([])
-  private _filteredPossibilities = this._requirements$.pipe(
-    withLatestFrom(this._possibilities$),
+  private _filteredPossibilities = combineLatest(
+    this._requirements$,
+    this._possibilities$,
+  ).pipe(
     // tap<[Requirement[], string[]]>(console.log),
     map(([requirements, possibilities]) =>
       possibilities.filter((possibility) =>
         requirements.reduce((fitsRequirements, requirement) => {
-          switch (requirement.type) {
-            case 'inexistent':
-              return !possibility.includes(requirement.letter)
-            case 'exists':
-              return possibility.includes(requirement.letter)
-            case 'exact':
-              return possibility[requirement.index] === requirement.letter
-          }
+          return (
+            fitsRequirements &&
+            WordPossibilitiesService.checkWordAgainstRequirement(
+              requirement,
+              possibility,
+            )
+          )
         }, true as boolean),
       ),
     ),
+    distinctUntilChanged((a, b) => a.length === b.length),
     // tap<string[]>(console.log),
   )
+
+  private static checkWordAgainstRequirement(
+    requirement: InexistentRequirement | ExistsRequirement | ExactRequirement,
+    possibility: string,
+  ) {
+    switch (requirement.type) {
+      case 'inexistent':
+        // TODO implement some actual logic
+        // return !possibility.includes(requirement.letter)
+        return true
+      case 'exists':
+        return (
+          possibility.includes(requirement.letter) &&
+          possibility[requirement.incorrectIndex] !== requirement.letter
+        )
+      case 'exact':
+        return possibility[requirement.index] === requirement.letter
+    }
+  }
+
+  private _subscriptions: Subscription[] = []
+
+  constructor() {
+    this._subscriptions.push(
+      this._filteredPossibilities.subscribe(this._possibilities$),
+    )
+  }
+
+  ngOnDestroy() {
+    this._subscriptions.forEach((sub) => sub.unsubscribe())
+  }
 
   generateAllPossibilities(length: number): string[] {
     const result: string[] = []
@@ -78,10 +112,15 @@ export class WordPossibilitiesService {
 
   setRequirements(requirements: Requirement[]) {
     this._requirements$.next(requirements)
+    console.log(requirements)
   }
 
   resetPossibilities(wordLength = 5) {
-    this.setPossibilities(this.generateAllPossibilities(wordLength))
+    console.time('generator')
+    const words = this.generateAllPossibilities(wordLength)
+    this.setPossibilities(words)
+    console.timeEnd('generator')
+    console.log(words)
   }
 
   setPossibilities(newOptions: string[]) {

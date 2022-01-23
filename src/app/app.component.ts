@@ -46,15 +46,6 @@ export class AppComponent implements OnInit {
     this.wordPossibilitiesService.resetPossibilities(2)
   }
 
-  updateRequiredLetters() {
-    this.wordPossibilitiesService.setRequirements(
-      this.requiredLetters.split('').map((letter) => ({
-        type: 'exists',
-        letter,
-      })),
-    )
-  }
-
   private static rowAndColToIndex(row: number, col: number) {
     return row * AppComponent.wordLength + col
   }
@@ -100,6 +91,7 @@ export class AppComponent implements OnInit {
           return {
             type: 'exists',
             letter,
+            incorrectIndex: index,
           } as ExistsRequirement
         } else if (letter.length) {
           return {

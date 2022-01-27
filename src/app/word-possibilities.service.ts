@@ -123,11 +123,14 @@ export class WordPossibilitiesService implements OnDestroy {
   }
 
   resetPossibilities(wordLength = 5) {
-    console.time('generator')
-    const words = this.generateAllPossibilities(wordLength)
-    this.setPossibilities(words)
-    console.timeEnd('generator')
-    console.log(words)
+    return new Promise<void>((resolve) => {
+      console.time('generator')
+      const words = this.generateAllPossibilities(wordLength)
+      this.setPossibilities(words)
+      console.timeEnd('generator')
+      console.log(words)
+      resolve()
+    })
   }
 
   setPossibilities(newOptions: string[]) {

@@ -1,8 +1,30 @@
-main {
+.idle,
+.loading {
+  display: grid;
+  place-content: center;
   font-size: 2em;
+  flex-grow: 1;
+}
+
+.start {
+  border: none;
+  outline: none;
+  background-color: var(--darkend-green);
+  font-size: 1em;
+  color: inherit;
+  padding: 0.1em 0.5em;
+  border-radius: 100vh;
+  cursor: pointer;
+}
+
+main {
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-size: 1.5em;
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 1em 0;
 }
 
 .words {

@@ -3,7 +3,10 @@
     (wordPossibilityService.possibilities$ | async)?.length
   }})
 </h2>
-<ul #listContainer>
+<ul
+  #listContainer
+  *ngIf="((wordPossibilityService.possibilities$ | async)?.length ?? 0) < 1000"
+>
   <li
     *ngFor="
       let word of wordPossibilityService.possibilities$ | async;

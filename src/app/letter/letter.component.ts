@@ -38,7 +38,7 @@ export class LetterComponent {
   set char(value: string) {
     this.letterChange.emit({
       ...this.letter,
-      letter: value.slice(0, 1),
+      letter: value.slice(0, 1).toLowerCase(),
     })
 
     this.letterTyped.emit()

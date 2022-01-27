@@ -6,9 +6,15 @@ import { LetterComponent } from './letter/letter.component'
 import { FormsModule } from '@angular/forms'
 import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contenteditable-accessor'
 import { WordlistComponent } from './wordlist/wordlist.component'
+import { LoadingSpinnerComponent } from './loading-spinner/loading-spinner.component'
 
 @NgModule({
-  declarations: [AppComponent, LetterComponent, WordlistComponent],
+  declarations: [
+    AppComponent,
+    LetterComponent,
+    WordlistComponent,
+    LoadingSpinnerComponent,
+  ],
   imports: [BrowserModule, FormsModule, ContenteditableValueAccessorModule],
   providers: [],
   bootstrap: [AppComponent],

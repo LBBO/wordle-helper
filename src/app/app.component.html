@@ -1,21 +1,34 @@
 <main>
-  <div class="words" #wordsContainer>
-    <div class="word" *ngFor="let word of guesses; let row = index">
-      <app-letter
-        *ngFor="let letter of word; let col = index"
-        [(letter)]="guesses[row][col]"
-        (letterTyped)="focusRelative(row, col, 1)"
-        (backspace)="backspace(row, col)"
-        [disabled]="savedWords.includes(row)"
-      ></app-letter>
-      <button
-        class="save"
-        (click)="commitRules(row)"
-        [disabled]="savedWords.includes(row)"
-      >
-        Save
-      </button>
-    </div>
+  <div class="idle" *ngIf="state === State.IDLE; else loadingContainer">
+    <button class="start" (click)="start()">Start</button>
   </div>
-  <app-wordlist></app-wordlist>
+  <ng-template #loadingContainer>
+    <div
+      class="loading"
+      *ngIf="loadingReady() || state === State.LOADING; else runningContainer"
+    >
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+  </ng-template>
+  <ng-template #runningContainer>
+    <div class="words" #wordsContainer>
+      <div class="word" *ngFor="let word of guesses; let row = index">
+        <app-letter
+          *ngFor="let letter of word; let col = index"
+          [(letter)]="guesses[row][col]"
+          (letterTyped)="focusRelative(row, col, 1)"
+          (backspace)="backspace(row, col)"
+          [disabled]="savedWords.includes(row)"
+        ></app-letter>
+        <button
+          class="save"
+          (click)="commitRules(row)"
+          [disabled]="savedWords.includes(row)"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+    <app-wordlist></app-wordlist>
+  </ng-template>
 </main>

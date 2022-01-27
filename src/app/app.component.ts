@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core'
+import { Component, ElementRef, ViewChild } from '@angular/core'
 import {
   ExactRequirement,
   ExistsRequirement,
@@ -6,6 +6,8 @@ import {
   Requirement,
   WordPossibilitiesService,
 } from './word-possibilities.service'
+import { waitUntil } from '../util/waitUntil'
+import { wait } from '../util/wait'
 
 export type GuessingResult = 'unknown' | 'exists' | 'exact'
 
@@ -14,12 +16,18 @@ export type GuessedLetter = {
   result: GuessingResult
 }
 
+export enum State {
+  IDLE,
+  LOADING,
+  RUNNING,
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   private static readonly numberOfGuesses = 6
   private static readonly wordLength = 5
 
@@ -39,12 +47,10 @@ export class AppComponent implements OnInit {
         })),
     )
   savedWords: number[] = []
+  readonly State = State
+  state: State = State.IDLE
 
   constructor(public wordPossibilitiesService: WordPossibilitiesService) {}
-
-  ngOnInit() {
-    this.wordPossibilitiesService.resetPossibilities(2)
-  }
 
   private static rowAndColToIndex(row: number, col: number) {
     return row * AppComponent.wordLength + col
@@ -109,5 +115,28 @@ export class AppComponent implements OnInit {
   commitRules(wordIndex: number) {
     this.savedWords.push(wordIndex)
     this.updateRules(this.guesses[wordIndex])
+  }
+
+  onLoaded?: () => void
+
+  start() {
+    this.state = State.LOADING
+    new Promise<void>((resolve) => {
+      this.onLoaded = resolve
+    }).then(() => {
+      waitUntil(() => Boolean(document.querySelector('.loading')))
+        .then(wait)
+        .then(() => this.wordPossibilitiesService.resetPossibilities(5))
+        .then(() => {
+          this.state = State.RUNNING
+        })
+    })
+  }
+
+  loadingReady(): boolean {
+    this.onLoaded?.()
+    this.onLoaded = undefined
+
+    return false
   }
 }

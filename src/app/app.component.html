@@ -1,13 +1,12 @@
 <main>
   <div class="idle" *ngIf="state === State.IDLE; else loadingContainer">
-    <button class="start" (click)="start()">Start</button>
+    <button class="start" (click)="state = State.LOADING">Start</button>
   </div>
   <ng-template #loadingContainer>
-    <div
-      class="loading"
-      *ngIf="loadingReady() || state === State.LOADING; else runningContainer"
-    >
-      <app-loading-spinner></app-loading-spinner>
+    <div class="loading" *ngIf="state === State.LOADING; else runningContainer">
+      <app-loading-spinner
+        (mounted)="loadPossibilities()"
+      ></app-loading-spinner>
     </div>
   </ng-template>
   <ng-template #runningContainer>

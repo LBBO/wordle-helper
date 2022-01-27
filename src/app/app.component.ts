@@ -6,8 +6,6 @@ import {
   Requirement,
   WordPossibilitiesService,
 } from './word-possibilities.service'
-import { waitUntil } from '../util/waitUntil'
-import { wait } from '../util/wait'
 
 export type GuessingResult = 'unknown' | 'exists' | 'exact'
 
@@ -117,26 +115,9 @@ export class AppComponent {
     this.updateRules(this.guesses[wordIndex])
   }
 
-  onLoaded?: () => void
-
-  start() {
-    this.state = State.LOADING
-    new Promise<void>((resolve) => {
-      this.onLoaded = resolve
-    }).then(() => {
-      waitUntil(() => Boolean(document.querySelector('.loading')))
-        .then(wait)
-        .then(() => this.wordPossibilitiesService.resetPossibilities(5))
-        .then(() => {
-          this.state = State.RUNNING
-        })
+  loadPossibilities() {
+    this.wordPossibilitiesService.resetPossibilities(5).then(() => {
+      this.state = State.RUNNING
     })
-  }
-
-  loadingReady(): boolean {
-    this.onLoaded?.()
-    this.onLoaded = undefined
-
-    return false
   }
 }

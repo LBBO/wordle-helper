@@ -1,7 +1,6 @@
 {
   "name": "wordle-helper",
   "version": "0.0.0",
-  "homepage": "https://lbbo.github.io/wordle-helper/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

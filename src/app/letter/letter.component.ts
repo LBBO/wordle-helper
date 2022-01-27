@@ -19,6 +19,9 @@ export class LetterComponent {
     result: 'unknown',
   }
 
+  @Input()
+  disabled: boolean = false
+
   @Output()
   letterChange = new EventEmitter<GuessedLetter>()
 
@@ -42,16 +45,29 @@ export class LetterComponent {
   }
 
   toggle(result: GuessingResult) {
-    this.letterChange.emit({
-      ...this.letter,
-      result: this.letter.result === result ? 'unknown' : result,
-    })
+    if (!this.disabled) {
+      this.letterChange.emit({
+        ...this.letter,
+        result: this.letter.result === result ? 'unknown' : result,
+      })
+    }
   }
 
-  @HostBinding('class')
   get result(): GuessingResult | 'wrong' {
     return this.letter.letter.length > 0 && this.letter.result === 'unknown'
       ? 'wrong'
       : this.letter.result
+  }
+
+  @HostBinding('class')
+  get classes() {
+    const result: string[] = []
+    result.push(this.result)
+
+    if (this.disabled) {
+      result.push('disabled')
+    }
+
+    return result.join(' ')
   }
 }

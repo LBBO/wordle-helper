@@ -113,6 +113,7 @@ export class WordPossibilitiesService implements OnDestroy {
 
   addRequirement(requirement: Requirement) {
     const currRequirements = this._requirements$.getValue()
+    console.log(currRequirements, requirement)
     this.setRequirements([...currRequirements, requirement])
   }
 

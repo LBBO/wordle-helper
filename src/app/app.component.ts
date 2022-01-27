@@ -27,7 +27,6 @@ export class AppComponent implements OnInit {
   wordsContainer?: ElementRef<HTMLDivElement>
 
   title = 'wordle-helper'
-  requiredLetters = ''
   requiredLettersRules: Requirement[] = []
   guesses: GuessedLetter[][] = Array(AppComponent.numberOfGuesses)
     .fill(1)
@@ -39,6 +38,7 @@ export class AppComponent implements OnInit {
           letter: '',
         })),
     )
+  savedWords: number[] = []
 
   constructor(public wordPossibilitiesService: WordPossibilitiesService) {}
 
@@ -76,9 +76,9 @@ export class AppComponent implements OnInit {
     letters?.[AppComponent.rowAndColToIndex(currRow, currCol) + delta]?.focus()
   }
 
-  updateRules() {
-    const newRequirements = this.guesses
-      .map((row) => row.map((letter, index) => ({ ...letter, index })))
+  updateRules(newGuesses: GuessedLetter[]) {
+    newGuesses
+      .map((letter, index) => ({ ...letter, index }))
       .flat()
       .map(({ result, letter, index }): Requirement | undefined => {
         if (result === 'exact') {
@@ -103,7 +103,11 @@ export class AppComponent implements OnInit {
         }
       })
       .filter((v): v is Requirement => v !== undefined)
+      .forEach((r) => this.wordPossibilitiesService.addRequirement(r))
+  }
 
-    this.wordPossibilitiesService.setRequirements(newRequirements)
+  commitRules(wordIndex: number) {
+    this.savedWords.push(wordIndex)
+    this.updateRules(this.guesses[wordIndex])
   }
 }

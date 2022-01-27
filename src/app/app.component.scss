@@ -20,3 +20,20 @@ main {
   gap: var(--gap);
   width: fit-content;
 }
+
+.save {
+  border: none;
+  background-color: var(--purple);
+  color: inherit;
+  font-size: 0.5em;
+  padding: 0 0.5em;
+  border-radius: 0.25em;
+  cursor: pointer;
+
+  &[disabled] {
+    color: var(--purple);
+    background-color: transparent;
+    outline: 1px solid currentColor;
+    cursor: not-allowed;
+  }
+}

@@ -1,5 +1,9 @@
 <ng-container>
-  <input [(ngModel)]="char" (keyup.backspace)="backspace.emit()" />
+  <input
+    [(ngModel)]="char"
+    (keyup.backspace)="backspace.emit()"
+    [disabled]="disabled"
+  />
   <div class="buttons">
     <div class="exact" (click)="toggle('exact')"></div>
     <div class="exists" (click)="toggle('exists')"></div>

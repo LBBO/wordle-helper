@@ -6,8 +6,15 @@
         [(letter)]="guesses[row][col]"
         (letterTyped)="focusRelative(row, col, 1)"
         (backspace)="backspace(row, col)"
-        (letterChange)="updateRules()"
+        [disabled]="savedWords.includes(row)"
       ></app-letter>
+      <button
+        class="save"
+        (click)="commitRules(row)"
+        [disabled]="savedWords.includes(row)"
+      >
+        Save
+      </button>
     </div>
   </div>
   <app-wordlist></app-wordlist>

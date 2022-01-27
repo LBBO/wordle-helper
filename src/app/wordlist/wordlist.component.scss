@@ -1,0 +1,38 @@
+h2 {
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em 1.5em;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 70vw;
+}
+
+li {
+  background-color: var(--darkend-green);
+  padding: 0.1em 0.7em;
+  border-radius: 100vh;
+  text-transform: uppercase;
+
+  &:focus,
+  &:focus-within,
+  &:focus-visible {
+    background-color: var(--light-grey);
+    color: var(--darkend-green);
+    outline: none;
+  }
+}
+
+.close {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: inherit;
+  font-size: inherit;
+  padding: 0;
+  cursor: pointer;
+}

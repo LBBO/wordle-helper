@@ -5,9 +5,10 @@ import { AppComponent } from './app.component'
 import { LetterComponent } from './letter/letter.component'
 import { FormsModule } from '@angular/forms'
 import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contenteditable-accessor'
+import { WordlistComponent } from './wordlist/wordlist.component'
 
 @NgModule({
-  declarations: [AppComponent, LetterComponent],
+  declarations: [AppComponent, LetterComponent, WordlistComponent],
   imports: [BrowserModule, FormsModule, ContenteditableValueAccessorModule],
   providers: [],
   bootstrap: [AppComponent],

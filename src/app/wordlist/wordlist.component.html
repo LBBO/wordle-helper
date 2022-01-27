@@ -1,0 +1,22 @@
+<h2>
+  Remaining possibilities ({{
+    (wordPossibilityService.possibilities$ | async)?.length
+  }})
+</h2>
+<ul #listContainer>
+  <li
+    *ngFor="
+      let word of wordPossibilityService.possibilities$ | async;
+      let index = index
+    "
+    (click)="focus($event.target)"
+    tabindex="0"
+    (keydown.backspace)="removeWord(word, index)"
+    (keydown.delete)="removeWord(word, index)"
+  >
+    {{ word }}
+    <button class="close" tabindex="-1" (click)="removeWord(word, index)">
+      ✖
+    </button>
+  </li>
+</ul>

@@ -105,6 +105,12 @@ export class WordPossibilitiesService implements OnDestroy {
     return result
   }
 
+  removeWord(word: string) {
+    const currentWords = this._possibilities$.getValue()
+    const newWords = currentWords.filter((curr) => curr !== word)
+    this.setPossibilities(newWords)
+  }
+
   addRequirement(requirement: Requirement) {
     const currRequirements = this._requirements$.getValue()
     this.setRequirements([...currRequirements, requirement])

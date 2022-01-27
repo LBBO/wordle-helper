@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Input,
   OnInit,
   Output,
   ViewChild,
@@ -20,6 +21,9 @@ export class LoadingSpinnerComponent implements OnInit {
 
   @Output()
   mounted: EventEmitter<void> = new EventEmitter<void>()
+
+  @Input()
+  size: 'normal' | 'small' = 'normal'
 
   constructor() {}
 

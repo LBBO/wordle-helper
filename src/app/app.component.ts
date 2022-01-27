@@ -20,6 +20,12 @@ export enum State {
   RUNNING,
 }
 
+export enum WordState {
+  SAVED,
+  LOADING,
+  UNSAVED,
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -44,9 +50,12 @@ export class AppComponent {
           letter: '',
         })),
     )
-  savedWords: number[] = []
   readonly State = State
+  readonly WordState = WordState
   state: State = State.IDLE
+  wordStates: WordState[] = Array(AppComponent.numberOfGuesses)
+    .fill(1)
+    .map(() => WordState.UNSAVED)
 
   constructor(public wordPossibilitiesService: WordPossibilitiesService) {}
 
@@ -81,38 +90,41 @@ export class AppComponent {
   }
 
   updateRules(newGuesses: GuessedLetter[]) {
-    newGuesses
-      .map((letter, index) => ({ ...letter, index }))
-      .flat()
-      .map(({ result, letter, index }): Requirement | undefined => {
-        if (result === 'exact') {
-          return {
-            type: 'exact',
-            letter,
-            index,
-          } as ExactRequirement
-        } else if (result === 'exists') {
-          return {
-            type: 'exists',
-            letter,
-            incorrectIndex: index,
-          } as ExistsRequirement
-        } else if (letter.length) {
-          return {
-            type: 'inexistent',
-            letter,
-          } as InexistentRequirement
-        } else {
-          return undefined
-        }
-      })
-      .filter((v): v is Requirement => v !== undefined)
-      .forEach((r) => this.wordPossibilitiesService.addRequirement(r))
+    return Promise.all(
+      newGuesses
+        .map((letter, index) => ({ ...letter, index }))
+        .flat()
+        .map(({ result, letter, index }): Requirement | undefined => {
+          if (result === 'exact') {
+            return {
+              type: 'exact',
+              letter,
+              index,
+            } as ExactRequirement
+          } else if (result === 'exists') {
+            return {
+              type: 'exists',
+              letter,
+              incorrectIndex: index,
+            } as ExistsRequirement
+          } else if (letter.length) {
+            return {
+              type: 'inexistent',
+              letter,
+            } as InexistentRequirement
+          } else {
+            return undefined
+          }
+        })
+        .filter((v): v is Requirement => v !== undefined)
+        .map((r) => this.wordPossibilitiesService.addRequirement(r)),
+    )
   }
 
   commitRules(wordIndex: number) {
-    this.savedWords.push(wordIndex)
-    this.updateRules(this.guesses[wordIndex])
+    this.updateRules(this.guesses[wordIndex]).then(() => {
+      this.wordStates[wordIndex] = WordState.SAVED
+    })
   }
 
   loadPossibilities() {

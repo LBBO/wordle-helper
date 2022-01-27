@@ -17,14 +17,21 @@
           [(letter)]="guesses[row][col]"
           (letterTyped)="focusRelative(row, col, 1)"
           (backspace)="backspace(row, col)"
-          [disabled]="savedWords.includes(row)"
+          [disabled]="wordStates[row] !== WordState.UNSAVED"
         ></app-letter>
         <button
           class="save"
-          (click)="commitRules(row)"
-          [disabled]="savedWords.includes(row)"
+          (click)="wordStates[row] = WordState.LOADING"
+          [disabled]="wordStates[row] !== WordState.UNSAVED"
         >
-          Save
+          <app-loading-spinner
+            *ngIf="wordStates[row] === WordState.LOADING; else saveText"
+            (mounted)="commitRules(row)"
+            size="small"
+          ></app-loading-spinner>
+          <ng-template #saveText>
+            {{ wordStates[row] === WordState.UNSAVED ? 'SAVE' : 'SAVED' }}
+          </ng-template>
         </button>
       </div>
     </div>

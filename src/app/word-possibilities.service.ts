@@ -112,14 +112,15 @@ export class WordPossibilitiesService implements OnDestroy {
   }
 
   addRequirement(requirement: Requirement) {
-    const currRequirements = this._requirements$.getValue()
-    console.log(currRequirements, requirement)
-    this.setRequirements([...currRequirements, requirement])
+    return new Promise<void>((resolve) => {
+      const currRequirements = this._requirements$.getValue()
+      this.setRequirements([...currRequirements, requirement])
+      resolve()
+    })
   }
 
   setRequirements(requirements: Requirement[]) {
     this._requirements$.next(requirements)
-    console.log(requirements)
   }
 
   resetPossibilities(wordLength = 5) {
@@ -128,7 +129,6 @@ export class WordPossibilitiesService implements OnDestroy {
       const words = this.generateAllPossibilities(wordLength)
       this.setPossibilities(words)
       console.timeEnd('generator')
-      console.log(words)
       resolve()
     })
   }

@@ -51,6 +51,7 @@ main {
   padding: 0 0.5em;
   border-radius: 0.25em;
   cursor: pointer;
+  min-width: 10ch;
 
   &[disabled] {
     color: var(--purple);

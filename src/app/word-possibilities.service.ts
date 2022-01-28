@@ -59,9 +59,7 @@ export class WordPossibilitiesService implements OnDestroy {
   ) {
     switch (requirement.type) {
       case 'inexistent':
-        // TODO implement some actual logic
-        // return !possibility.includes(requirement.letter)
-        return true
+        return !possibility.includes(requirement.letter)
       case 'exists':
         return (
           possibility.includes(requirement.letter) &&
@@ -139,5 +137,9 @@ export class WordPossibilitiesService implements OnDestroy {
 
   get possibilities$(): Observable<string[]> {
     return this._filteredPossibilities
+  }
+
+  get requirements$() {
+    return this._requirements$.asObservable()
   }
 }

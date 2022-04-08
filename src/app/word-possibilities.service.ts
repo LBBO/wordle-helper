@@ -30,7 +30,7 @@ export class WordPossibilitiesService implements OnDestroy {
     .fill(1)
     .map((_, i) => String.fromCharCode(0x61 + i))
   private _possibilities$ = new BehaviorSubject<string[]>([])
-  private _requirements$ = new BehaviorSubject<Requirement[]>([])
+  private _requirements$ = new BehaviorSubject<Requirement[][]>([])
   private _filteredPossibilities = combineLatest(
     this._requirements$,
     this._possibilities$,
@@ -38,11 +38,11 @@ export class WordPossibilitiesService implements OnDestroy {
     // tap<[Requirement[], string[]]>(console.log),
     map(([requirements, possibilities]) =>
       possibilities.filter((possibility) =>
-        requirements.reduce((fitsRequirements, requirement) => {
+        requirements.reduce((fitsRequirements, requirements) => {
           return (
             fitsRequirements &&
-            WordPossibilitiesService.checkWordAgainstRequirement(
-              requirement,
+            WordPossibilitiesService.checkWordAgainstRequirements(
+              requirements,
               possibility,
             )
           )
@@ -53,21 +53,60 @@ export class WordPossibilitiesService implements OnDestroy {
     // tap<string[]>(console.log),
   )
 
-  private static checkWordAgainstRequirement(
-    requirement: InexistentRequirement | ExistsRequirement | ExactRequirement,
+  private static checkWordAgainstRequirements(
+    requirements: Requirement[],
     possibility: string,
-  ) {
-    switch (requirement.type) {
-      case 'inexistent':
-        return !possibility.includes(requirement.letter)
-      case 'exists':
-        return (
-          possibility.includes(requirement.letter) &&
-          possibility[requirement.incorrectIndex] !== requirement.letter
-        )
-      case 'exact':
-        return possibility[requirement.index] === requirement.letter
-    }
+  ): boolean {
+    const letters = possibility.split('')
+      .map((char, index) => (
+        {
+          char,
+          index,
+          used: false,
+        }
+      ))
+
+    const getUnused = () => letters.filter(({ used }) => !used)
+
+    return requirements
+      .sort((a, b) => {
+        // TODO: refactor to use array indexes somehow?
+        const getPriority = (r: Requirement) => {
+          switch (r.type) {
+            case 'exact':
+              return 1
+            case 'exists':
+              return 2
+            case 'inexistent':
+              return 3
+          }
+        }
+        // return > 0 if a > b
+        return getPriority(a) - getPriority(b)
+      })
+      .reduce((matchesPreviousRequirements, requirement, index) => {
+        let matchesCurrRequirement: boolean
+
+        switch (requirement.type) {
+          case 'exact':
+            matchesCurrRequirement = letters[requirement.index].char === requirement.letter
+            letters[requirement.index].used = true
+            break
+          case 'exists':
+            const hasOtherCharAtIncorrectIndex = letters[requirement.incorrectIndex].char !== requirement.letter
+            const firstRemainingOccurrence = getUnused()
+              .find(({ char, index }) => char === requirement.letter && index !== requirement.incorrectIndex)
+            matchesCurrRequirement = hasOtherCharAtIncorrectIndex && Boolean(firstRemainingOccurrence)
+            if (firstRemainingOccurrence) {
+              firstRemainingOccurrence.used = true
+            }
+            break
+          case 'inexistent':
+            matchesCurrRequirement = getUnused().find(({ char }) => char === requirement.letter) === undefined
+        }
+
+        return matchesCurrRequirement && matchesPreviousRequirements
+      }, true as boolean)
   }
 
   private _subscriptions: Subscription[] = []
@@ -109,15 +148,15 @@ export class WordPossibilitiesService implements OnDestroy {
     this.setPossibilities(newWords)
   }
 
-  addRequirement(requirement: Requirement) {
+  addSimultaneousRequirements(requirements: Requirement[]) {
     return new Promise<void>((resolve) => {
       const currRequirements = this._requirements$.getValue()
-      this.setRequirements([...currRequirements, requirement])
+      this.setRequirements([...currRequirements, requirements])
       resolve()
     })
   }
 
-  setRequirements(requirements: Requirement[]) {
+  setRequirements(requirements: Requirement[][]) {
     this._requirements$.next(requirements)
   }
 

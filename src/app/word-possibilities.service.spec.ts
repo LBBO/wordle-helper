@@ -2,7 +2,8 @@ import { TestBed } from '@angular/core/testing'
 
 import {
   ExactRequirement,
-  ExistsRequirement, InexistentRequirement,
+  ExistsRequirement,
+  InexistentRequirement,
   Requirement,
   WordPossibilitiesService,
 } from './word-possibilities.service'
@@ -68,7 +69,7 @@ describe('WordPossibilitiesService', () => {
       aExistsRequirement = {
         type: 'exists',
         letter: 'a',
-        incorrectIndex: 3,
+        incorrectIndex: 2,
       }
       noERequirement = {
         type: 'inexistent',
@@ -79,11 +80,13 @@ describe('WordPossibilitiesService', () => {
 
     it('should update the requirements observable', (done) => {
       // given
-      const newRequirements: Requirement[] = [
-        {
-          type: 'inexistent',
-          letter: 'a',
-        },
+      const newRequirements: Requirement[][] = [
+        [
+          {
+            type: 'inexistent',
+            letter: 'a',
+          },
+        ],
       ]
 
       // then
@@ -104,27 +107,127 @@ describe('WordPossibilitiesService', () => {
 
     it('should update the filtered possibilities', (done) => {
       // given
-      const newRequirements = [correctCRequirement, aExistsRequirement, noERequirement]
+      const newRequirements = [[correctCRequirement, aExistsRequirement, noERequirement]]
 
       // then
       let isFirst = true
-      service.possibilities$.subscribe((possibilities) => {
-        if (!isFirst) {
-          possibilities.forEach(word => {
-            expect(word).not.toContain(noERequirement.letter)
-            expect(word[correctCRequirement.index]).toBe(correctCRequirement.letter)
-            expect(word).toContain(aExistsRequirement.letter)
-            expect(word[aExistsRequirement.incorrectIndex]).not.toBe(aExistsRequirement.letter)
-          })
-          expect(possibilities.includes(word)).toBeTrue()
-          done()
-        } else {
-          isFirst = false
-        }
-      })
+      service.possibilities$
+        .subscribe((possibilities) => {
+          if (!isFirst) {
+            possibilities.forEach((possibility) => {
+              expect(possibility).not.toContain(noERequirement.letter)
+              expect(possibility[correctCRequirement.index]).toBe(correctCRequirement.letter)
+              expect(possibility).toContain(aExistsRequirement.letter)
+              expect(possibility[aExistsRequirement.incorrectIndex]).not.toBe(aExistsRequirement.letter)
+            })
+            expect(possibilities.includes(word)).toBeTrue()
+            done()
+          } else {
+            isFirst = false
+          }
+        })
 
       // when
       service.setRequirements(newRequirements)
+    })
+  })
+
+  describe('filtered possibilities', () => {
+    const possibilities = 'tools, frown, clown, class'.split(', ')
+
+    beforeEach(() => {
+      service.setPossibilities(possibilities)
+    })
+
+    it('should handle two occurrences of the same letter when both are exact', (done) => {
+      // given
+      // word: tools
+      const requirements: Requirement[][] = [
+        [
+          {
+            type: 'exact',
+            letter: 'o',
+            index: 1,
+          },
+          {
+            type: 'exact',
+            letter: 'o',
+            index: 2,
+          },
+        ],
+      ]
+      // when
+      service.setRequirements(requirements)
+
+      // then
+      service.possibilities$.subscribe((
+        possibilities => {
+          expect(possibilities).toHaveSize(1)
+          expect(possibilities).toContain('tools')
+          done()
+        }
+      ))
+    })
+
+    it('should handle two occurrences of the same letter when one is exact and one is existent', (done) => {
+      // given
+      // word: tools
+      const requirements: Requirement[][] = [
+        [
+          {
+            type: 'exact',
+            letter: 'o',
+            index: 2,
+          },
+          {
+            type: 'exists',
+            letter: 'o',
+            incorrectIndex: 0,
+          },
+        ],
+      ]
+      // when
+      service.setRequirements(requirements)
+
+      // then
+      service.possibilities$.subscribe((
+        possibilities => {
+          expect(possibilities).toHaveSize(1)
+          expect(possibilities).toContain('tools')
+          done()
+        }
+      ))
+    })
+
+    it('should handle two occurrences of the same letter when both are existent', (done) => {
+      // given
+      // word: tools
+      const requirements: Requirement[][] = [
+        [
+          {
+            type: 'exists',
+            letter: 'o',
+            incorrectIndex: 0,
+          },
+          {
+            type: 'exists',
+            letter: 'o',
+            incorrectIndex: 3,
+          },
+        ],
+      ]
+
+      // when
+      service.setRequirements(requirements)
+
+      // then
+      service.possibilities$.subscribe((
+        possibilities => {
+          expect(possibilities).toHaveSize(1)
+          expect(possibilities).toContain('tools')
+          done()
+        }
+      ))
     })
   })
 })

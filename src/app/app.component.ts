@@ -90,8 +90,7 @@ export class AppComponent {
   }
 
   updateRules(newGuesses: GuessedLetter[]) {
-    return Promise.all(
-      newGuesses
+      const newRequirements = newGuesses
         .map((letter, index) => ({ ...letter, index }))
         .flat()
         .map(({ result, letter, index }): Requirement | undefined => {
@@ -117,8 +116,8 @@ export class AppComponent {
           }
         })
         .filter((v): v is Requirement => v !== undefined)
-        .map((r) => this.wordPossibilitiesService.addRequirement(r)),
-    )
+
+    return this.wordPossibilitiesService.addSimultaneousRequirements(newRequirements)
   }
 
   commitRules(wordIndex: number) {

@@ -230,4 +230,54 @@ describe('WordPossibilitiesService', () => {
       ))
     })
   })
+
+  describe('upperBoundForPossibilities$', () => {
+    const possibilities = 'tools, frown, clown, class'.split(', ')
+
+    beforeEach(() => {
+      service.setPossibilities(possibilities)
+    })
+
+    it('should contain the correct initial value', (done) => {
+      service.upperBoundForPossibilities$.subscribe(value => {
+        expect(value).toBe(possibilities.length)
+        done()
+      })
+    })
+
+    it('should contain the correct value after filtering', (done) => {
+      service.addSimultaneousRequirements([
+        {
+          type: 'exact',
+          letter: 't',
+          index: 0,
+        },
+        {
+          type: 'exact',
+          letter: 'o',
+          index: 1,
+        },
+        {
+          type: 'exact',
+          letter: 'o',
+          index: 2,
+        },
+        {
+          type: 'exact',
+          letter: 'l',
+          index: 3,
+        },
+        {
+          type: 'exact',
+          letter: 's',
+          index: 4,
+        },
+      ])
+
+      service.upperBoundForPossibilities$.subscribe(value => {
+        expect(value).toBe(1)
+        done()
+      })
+    })
+  })
 })

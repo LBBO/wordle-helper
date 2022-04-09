@@ -181,4 +181,8 @@ export class WordPossibilitiesService implements OnDestroy {
   get requirements$() {
     return this._requirements$.asObservable()
   }
+
+  get upperBoundForPossibilities$(): Observable<number> {
+    return this.possibilities$.pipe(map(possibilities => possibilities.length))
+  }
 }

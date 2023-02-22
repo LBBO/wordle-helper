@@ -231,6 +231,10 @@ describe('WordPossibilitiesService', () => {
     })
   })
 
+  describe('getPossibleCharsAtIndex', () => {
+  	// TODO: write tests :D
+  });
+
   describe('upperBoundForPossibilities$', () => {
     const possibilities = 'tools, frown, clown, class'.split(', ')
 

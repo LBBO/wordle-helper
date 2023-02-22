@@ -121,6 +121,22 @@ export class WordPossibilitiesService implements OnDestroy {
     this._subscriptions.forEach((sub) => sub.unsubscribe())
   }
 
+  getPossibleCharsAtIndex(index: number): string[] {
+    const exactCharRequirementExists = this._requirements$.getValue().flat()
+      .find(requirement => requirement.type === 'exact' && requirement.index === index)
+
+    if (exactCharRequirementExists) {
+      return [exactCharRequirementExists.letter]
+    }
+
+    const impossibleChars = this._requirements$.getValue().flat()
+      .filter(r => r.type === 'inexistent' || (
+        r.type === 'exists' && index === r.incorrectIndex
+      ))
+      .map(r => r.letter)
+    return WordPossibilitiesService.alphabet.filter(char => !impossibleChars.includes(char))
+  }
+
   generateAllPossibilities(length: number): string[] {
     const result: string[] = []
 

@@ -32,8 +32,7 @@
             "inlineStyleLanguage": "scss",
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": ["src/styles.scss"],
-            "scripts": [],
-            "baseHref": "https://lbbo.github.io/wordle-helper/"
+            "scripts": []
           },
           "configurations": {
             "production": {
